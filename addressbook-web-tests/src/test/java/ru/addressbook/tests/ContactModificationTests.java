@@ -14,6 +14,7 @@ public class ContactModificationTests extends TestBase {
             "test_lastname", null), false);
     app.getContactHelper().submitContactCreation();
     app.getContactHelper().returnToHomePage();
+
     app.getContactHelper().wd.findElement(By.linkText("Logout")).click();
   }
 }
