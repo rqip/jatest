@@ -1,25 +1,33 @@
 package ru.addressbook.tests;
 
-import org.openqa.selenium.By;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.addressbook.model.ContactData;
-import ru.addressbook.model.GroupData;
 
-import java.util.List;
+import java.io.File;
 
 public class ContactCreationTests extends TestBase {
 
     @Test
     public void testContactCreation() {
-      app.getNavigationHelper().gotoGroupPage();
-      app.getContactHelper().initContactCreation();
-      app.getContactHelper().fillContactForm(new ContactData("test_name",
-              "test_lastname", "test1"), true);
-      app.getContactHelper().submitContactCreation();
-      app.getContactHelper().returnToHomePage();
+      app.goTo().groupPage();
+      app.contact().initContactCreation();
 
-      app.getContactHelper().wd.findElement(By.linkText("Logout")).click();
+      File photo = new File("src/test/resources/file.png");
+
+      app.contact().fillContactForm(new ContactData().withFirstName("test_name")
+             .withLastName("test_lastname").withPhoto(photo), true);
+      app.contact().submitContactCreation();
+      app.contact().returnToHomePage();
     }
 
+
+    @Test(enabled = false)
+    public void testCurrentDir() {
+      File currentDir = new File(".");
+      System.out.println(currentDir.getAbsolutePath());
+
+      File photo = new File("src/test/resources/file.png");
+      System.out.println(photo.getAbsolutePath());
+      System.out.println(photo.exists());
+    }
 }

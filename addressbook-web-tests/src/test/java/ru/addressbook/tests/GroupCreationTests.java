@@ -1,37 +1,94 @@
 package ru.addressbook.tests;
 
-import org.testng.Assert;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.openqa.selenium.*;
 import ru.addressbook.model.GroupData;
+import ru.addressbook.model.Groups;
 
-import java.util.Comparator;
-import java.util.HashSet;
+import java.io.*;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 public class GroupCreationTests extends TestBase {
 
-  @Test
-  public void testGroupCreation() {
-    app.getNavigationHelper().gotoGroupPage();
-    app.getNavigationHelper().gotoGroupPage();
-    List<GroupData> before = app.getGroupHelper().getGroupList();
+  @DataProvider
+  public Iterator<Object[]> validGroupsFromXml() throws IOException {
 
-    GroupData group = new GroupData("test2", null, null);
-    app.getGroupHelper().createGroup(group);
-    List<GroupData> after = app.getGroupHelper().getGroupList();
-    Assert.assertEquals(after.size(), before.size() + 1);
+    try (BufferedReader reader = new BufferedReader(new FileReader(
+            new File("src/test/resources/groups.xml")))) {
+      String xml = "";
+      String line = reader.readLine();
+      while (line != null) {
+        xml += line;
+        line = reader.readLine();
+      }
 
-    group.setId(after.stream().max((o1, o2) -> Integer.compare(o1.getId(), o2.getId())).get().getId());
-    before.add(group);
+      XStream xstream = new XStream(new StaxDriver());
+      xstream.processAnnotations(GroupData.class);
+      List<GroupData> groups = (List<GroupData>) xstream.fromXML(xml);
 
-    Comparator<? super GroupData> byId =
-            (o1, o2) -> Integer.compare(o1.getId(), o2.getId());
-    before.sort(byId);
-    after.sort(byId);
-    Assert.assertEquals(before, after);
+      return groups.stream().map((g) -> new Object[]{g})
+              .collect(Collectors.toList()).iterator();
+    }
+  }
 
-    app.getGroupHelper().wd.findElement(By.linkText("Logout")).click();
+  @DataProvider
+  public Iterator<Object[]> validGroupsFromJson() throws IOException {
+
+    try ( BufferedReader reader = new BufferedReader(new FileReader(
+            new File("src/test/resources/groups.json"))) ) {
+      String json = "";
+      String line = reader.readLine();
+      while (line != null) {
+        json += line;
+        line = reader.readLine();
+      }
+
+      Gson gson = new Gson();
+      List<GroupData> groups = gson.fromJson(json,
+          new TypeToken<List<GroupData>>() {}.getType());  //List<GroupData>.class
+
+      return groups.stream().map((g) -> new Object[]{g})
+              .collect(Collectors.toList()).iterator();
+    }
+  }
+
+  //@Test(dataProvider = "validGroupsFromXml")
+  @Test(dataProvider = "validGroupsFromJson")
+  public void testGroupCreation(GroupData group) {
+
+    app.goTo().groupPage();
+    Groups before = app.group().all();
+    app.group().create(group);
+    assertThat(app.group().count(), equalTo(before.size() +1));
+
+    Groups after = app.group().all();
+    assertThat(after, equalTo(before.withAdded(
+            group.withId(after.stream()
+                    .mapToInt((g) -> g.getId()).max().getAsInt()))));
+  }
+
+  @Test(enabled = false)
+  public void testGroupCreation1() {
+    app.goTo().groupPage();
+    Groups before = app.group().all();
+
+    GroupData group = new GroupData().withName("test'");
+    app.group().create(group);
+    assertThat(app.group().count(), equalTo(before.size()));
+    Groups after = app.group().all();
+    assertThat(after, equalTo(before));
   }
 
 }

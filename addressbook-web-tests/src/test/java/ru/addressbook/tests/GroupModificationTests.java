@@ -1,45 +1,35 @@
 package ru.addressbook.tests;
 
-import org.openqa.selenium.By;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.addressbook.model.GroupData;
+import ru.addressbook.model.Groups;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GroupModificationTests extends TestBase {
 
+  @BeforeMethod
+  public void ensurePreconditions() {
+    app.goTo().groupPage();
+    if (app.group().all().size() == 0) {
+      app.group().create(new GroupData().withName("test1"));
+    }
+  }
+
   @Test
   public void testGroupModification() {
-    app.getNavigationHelper().gotoGroupPage();
-    if (! app.getGroupHelper().isThereAGroup()) {
-      app.getGroupHelper().createGroup(new GroupData("test1", null, null));
-    }
+    Groups before = app.group().all();
+    GroupData modifiedGroup = before.iterator().next();
+    GroupData group = new GroupData().withId(modifiedGroup.getId()).
+            withName("test1").withHeader("test2").withFooter("test3");
 
-    List<GroupData> before = app.getGroupHelper().getGroupList();
-    app.getGroupHelper().SelectGroup(before.size() - 1);
-    app.getGroupHelper().initGroupModification();
-
-    GroupData group = new GroupData(before.get(before.size() - 1).getId(),
-            "test1", "test2", "test3");
-    app.getGroupHelper().fillGroupForm(group);
-    app.getGroupHelper().submitGroupModification();
-    app.getGroupHelper().returnToGroupPage();
-
-    List<GroupData> after = app.getGroupHelper().getGroupList();
-    Assert.assertEquals(after.size(), before.size());
-
-    before.remove(before.size() - 1);
-    before.add(group);
-
-    Comparator<? super GroupData> byId =
-            (o1, o2) -> Integer.compare(o1.getId(), o2.getId());
-    before.sort(byId);
-    after.sort(byId);
-    Assert.assertEquals(before, after);
-
-    app.getGroupHelper().wd.findElement(By.linkText("Logout")).click();
+    app.group().modify(group);
+    assertThat(app.group().count(), equalTo(before.size()));
+    Groups after = app.group().all();
+    assertThat(after, equalTo(before.without(modifiedGroup).withAdded(group)));
   }
+
 }

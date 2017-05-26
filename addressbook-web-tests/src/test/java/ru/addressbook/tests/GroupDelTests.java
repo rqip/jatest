@@ -1,36 +1,32 @@
 package ru.addressbook.tests;
 
-import org.openqa.selenium.By;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.addressbook.model.GroupData;
+import ru.addressbook.model.Groups;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GroupDelTests extends TestBase {
 
+  @BeforeMethod
+  public void ensurePreconditions() {
+    app.goTo().groupPage();
+    if (app.group().all().size() == 0) {
+      app.group().create(new GroupData().withName("test1"));
+    }
+  }
+
   @Test
   public void testGroupDel() {
-    app.getNavigationHelper().gotoGroupPage();
-    if (! app.getGroupHelper().isThereAGroup()) {
-      app.getGroupHelper().createGroup(new GroupData("test1", null, null));
-    }
-
-    List<GroupData> before = app.getGroupHelper().getGroupList();
-    app.getGroupHelper().SelectGroup(before.size() - 1);
-    app.getGroupHelper().delSelectedGroups();
-    app.getGroupHelper().returnToGroupPage();
-
-    List<GroupData> after = app.getGroupHelper().getGroupList();
-    Assert.assertEquals(after.size(), before.size() - 1);
-
-    before.remove(before.size() - 1);
-    /*for (int i = 0; i < after.size(); i++) {
-      Assert.assertEquals(before.get(i), after.get(i));
-    }*/
-    Assert.assertEquals(before, after);
-
-    app.getGroupHelper().wd.findElement(By.linkText("Logout")).click();
+    Groups before = app.group().all();
+    GroupData deletedGroup = before.iterator().next();
+    app.group().delete(deletedGroup);
+    assertThat(app.group().count(), equalTo(before.size() -1));
+    Groups after = app.group().all();
+    assertThat(after, equalTo(before.without(deletedGroup)));
   }
 
 }

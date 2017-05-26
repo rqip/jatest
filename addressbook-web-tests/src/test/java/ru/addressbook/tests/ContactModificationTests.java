@@ -1,20 +1,18 @@
 package ru.addressbook.tests;
 
-import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 import ru.addressbook.model.ContactData;
 
 public class ContactModificationTests extends TestBase {
 
-  @Test
+  @Test(enabled = false)
   public void testContactCreation() {
-    app.getNavigationHelper().gotoGroupPage();
-    app.getContactHelper().initContactModification();
-    app.getContactHelper().fillContactForm(new ContactData("test_name",
-            "test_lastname", null), false);
-    app.getContactHelper().submitContactCreation();
-    app.getContactHelper().returnToHomePage();
+    app.goTo().groupPage();
+    app.contact().initContactModification();
 
-    app.getContactHelper().wd.findElement(By.linkText("Logout")).click();
+    app.contact().fillContactForm(new ContactData().withFirstName("test_name")
+            .withLastName("test_lastname").withGroup(null), false);
+    app.contact().submitContactCreation();
+    app.contact().returnToHomePage();
   }
 }
