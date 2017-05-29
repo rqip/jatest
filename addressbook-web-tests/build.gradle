@@ -13,6 +13,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'ch.qos.logback:logback-classic:1.2.2'
     compile 'ch.qos.logback:logback-core:1.2.2'
+    compile 'mysql:mysql-connector-java:6.0.6'
+    compile 'org.hibernate:hibernate-core:5.1.0.Final'
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
 }
 
 task testGroups(type: Test) {
@@ -25,6 +28,9 @@ task testGroups(type: Test) {
     if (project.hasProperty('target')) {
         systemProperty 'target', "${target}"
     }
+    if (project.hasProperty('verifyUI')) {
+        systemProperty 'verifyUI', "${verifyUI}"
+    }
 }
 
 task testContacts(type: Test) {
@@ -36,5 +42,8 @@ task testContacts(type: Test) {
     }
     if (project.hasProperty('target')) {
         systemProperty 'target', "${target}"
+    }
+    if (project.hasProperty('verifyUI')) {
+        systemProperty 'verifyUI', "${verifyUI}"
     }
 }
