@@ -19,8 +19,18 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="addressbook-web-tests_main" target="1.8" />
+      <module name="addressbook-web-tests_test" target="1.8" />
+      <module name="ghub-samp_main" target="1.8" />
+      <module name="ghub-samp_test" target="1.8" />
+      <module name="mantis-tests_main" target="1.8" />
+      <module name="mantis-tests_test" target="1.8" />
+      <module name="rest-samp_main" target="1.8" />
+      <module name="rest-samp_test" target="1.8" />
       <module name="sbox_main" target="1.8" />
       <module name="sbox_test" target="1.8" />
+      <module name="soap-samp_main" target="1.8" />
+      <module name="soap-samp_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

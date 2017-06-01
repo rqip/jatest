@@ -118,7 +118,7 @@ public class JamesHelper {
     Folder inbox = openInbox(username, password);
     for (Message message : inbox.getMessages()) {
       message.setFlag(Flags.Flag.DELETED, true);
-   }
+    }
     closeFolder(inbox);
   }
 
