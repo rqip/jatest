@@ -14,7 +14,7 @@ import ru.addressbook.model.GroupData;
 import java.util.List;
 
 public class HbConnectionTest {
-
+/*
   private SessionFactory sessionFactory;
 
   @BeforeClass
@@ -49,5 +49,5 @@ public class HbConnectionTest {
       System.out.println(contact.getGroups());
     }
   }
-
+*/
 }
