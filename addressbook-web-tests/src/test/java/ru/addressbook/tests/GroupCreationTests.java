@@ -10,15 +10,13 @@ import ru.addressbook.model.GroupData;
 import ru.addressbook.model.Groups;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 
 public class GroupCreationTests extends TestBase {
 
@@ -57,7 +55,8 @@ public class GroupCreationTests extends TestBase {
 
       Gson gson = new Gson();
       List<GroupData> groups = gson.fromJson(json,
-          new TypeToken<List<GroupData>>() {}.getType());  //List<GroupData>.class
+              new TypeToken<List<GroupData>>() {
+              }.getType());  //List<GroupData>.class
 
       return groups.stream().map((g) -> new Object[]{g})
               .collect(Collectors.toList()).iterator();
@@ -67,7 +66,6 @@ public class GroupCreationTests extends TestBase {
   //@Test(dataProvider = "validGroupsFromXml")
   @Test(dataProvider = "validGroupsFromJson")
   public void testGroupCreation(GroupData group) {
-
     app.goTo().groupPage();
     Groups before = app.group().all();
     app.group().create(group);

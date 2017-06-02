@@ -28,10 +28,9 @@ public class ContactHelper extends HelperBase {
     attach(By.name("photo"), contactData.getPhoto());
 
     if (creation) {
-      if (contactData.getGroups() > 0) {
-        Assert.assertTrue(contactData.getGroups().size() == 1);
+      if (contactData.getGroup() != null) {
         new Select(wd.findElement(By.name("new_group")))
-                .selectByVisibleText(contactData.getGroups().iterator().next());
+                .selectByVisibleText(contactData.getGroup());
       }
     } else {
       Assert.assertFalse(isElementPresent(By.name("new_group")));
