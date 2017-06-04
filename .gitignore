@@ -65,12 +65,8 @@ $RECYCLE.BIN/
 *.lnk
 .idea/workspace.xml
 .idea/misc.xml
-*.xml
-*.iml
+.idea/libraries/*.*
+*Gradle*.xml
 *.iml
 *.jar
-*.xml
-*.xml
-*.xml
-*.xml
-*.iml
+
